@@ -1,9 +1,9 @@
-# 🧠 Sistema de Triagem e Suporte Inteligente com IA
+#  Sistema de Triagem e Suporte Inteligente com IA
 
-## 🎯 Sobre o Projeto
+##  Sobre o Projeto
 Este projeto é a base de um Micro-SaaS para gestão de atendimento. Ele recebe mensagens de usuários via WhatsApp, utiliza Inteligência Artificial para interpretar, categorizar e priorizar o problema, gera um protocolo de atendimento e salva os dados de forma estruturada em um banco de dados relacional para consumo analítico (Power BI) e gestão via Dashboard web.
 
-## 🏗️ Arquitetura e Tecnologias
+##  Arquitetura e Tecnologias
 - **Orquestração de Fluxos:** n8n (Self-hosted)
 - **Inteligência Artificial:** Google Gemini (LLM)
 - **Banco de Dados:** PostgreSQL
@@ -13,7 +13,7 @@ Este projeto é a base de um Micro-SaaS para gestão de atendimento. Ele recebe 
 
 ---
 
-## 🗄️ Estrutura do Banco de Dados (PostgreSQL)
+##  Estrutura do Banco de Dados (PostgreSQL)
 A tabela `chamados_suporte` atua como a *Single Source of Truth* (Fonte Única de Verdade) do sistema.
 
 ```sql
