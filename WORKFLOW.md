@@ -41,6 +41,11 @@ Este documento detalha a engenharia do fluxo `Fluxo Principal-IA`, responsável 
 ### 8. Caminho TRUE (Abertura de Chamado)
 - **A. `Save` (PostgreSQL - Execute Query):** Executa o comando `INSERT INTO chamados_suporte` para salvar as variáveis absolutas (protocolo, telefone, mensagem original, categoria, prioridade e resposta da IA) na tabela principal, alimentando o Dashboard web e o Power BI.
 
+- **B. `HTTP Request_ticket` (Evolution API):** Dispara uma requisição HTTP POST para a API do WhatsApp, enviando a mensagem oficial de abertura de chamado, informando a categoria, prioridade e o número do protocolo gerado.
+
+### 9. Caminho FALSE (Atendimento Simples)
+- **A. `HTTP Request_CHAT` (Evolution API):** Dispara uma requisição HTTP POST diretamente para o WhatsApp do usuário contendo apenas a resposta conversacional gerada pela IA, mantendo o engajamento sem criar registros no banco de suporte.
+
 
 ## Fluxo 2: API REST para o Dashboard (Frontend)
 **Objetivo:** Servir os dados do banco de dados para a interface web de forma segura.
@@ -63,8 +68,5 @@ Este documento detalha a engenharia do fluxo `Fluxo Principal-IA`, responsável 
 
 ---
 
-> 💡 **Nota Técnica:** Todo o fluxo utiliza referências de nós absolutas (`$()`) no n8n em vez de relativas (`$json`). Isso garante que a arquitetura seja escalável e não sofra perda de contexto (erros de `undefined`) caso novos nós de processamento sejam adicionados no meio do caminho futuramente.
-- **B. `HTTP Request_ticket` (Evolution API):** Dispara uma requisição HTTP POST para a API do WhatsApp, enviando a mensagem oficial de abertura de chamado, informando a categoria, prioridade e o número do protocolo gerado.
+ **Nota Técnica:** Todo o fluxo utiliza referências de nós absolutas (`$()`) no n8n em vez de relativas (`$json`). Isso garante que a arquitetura seja escalável e não sofra perda de contexto (erros de `undefined`) caso novos nós de processamento sejam adicionados no meio do caminho futuramente.
 
-### 9. Caminho FALSE (Atendimento Simples)
-- **A. `HTTP Request_CHAT` (Evolution API):** Dispara uma requisição HTTP POST diretamente para o WhatsApp do usuário contendo apenas a resposta conversacional gerada pela IA, mantendo o engajamento sem criar registros no banco de suporte.
