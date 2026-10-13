@@ -5,7 +5,7 @@ Este documento detalha a engenharia do fluxo `Fluxo Principal-IA`, responsável 
 ##  Fluxo Principal-AI: Triagem, Decisão e Resposta
 **Objetivo:** Atuar como o motor cognitivo do sistema, gerenciando o ciclo de vida completo do atendimento desde a recepção da mensagem até o retorno ao usuário.
 
-### 1. Webhook (Trigger)
+### 1. Webhook (`Trigger`)
 - **Função:** Ouvinte de eventos da Evolution API.
 - **Configuração:** Recebe requisições HTTP POST contendo o payload em tempo real de todas as interações no WhatsApp conectado.
 
