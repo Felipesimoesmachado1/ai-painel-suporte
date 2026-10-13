@@ -1,6 +1,6 @@
 # Arquitetura do Fluxo Principal (n8n)
 
-Este documento detalha a engenharia do fluxo `Fluxo Principal-AI`, responsável por receber mensagens do WhatsApp, manter contexto conversacional, tomar decisões lógicas e persistir dados no banco relacional.
+Este documento detalha a engenharia do fluxo `Fluxo Principal-IA`, responsável por receber mensagens do WhatsApp, manter contexto conversacional, tomar decisões lógicas e persistir dados no banco relacional.
 
 ##  Fluxo Principal-AI: Triagem, Decisão e Resposta
 **Objetivo:** Atuar como o motor cognitivo do sistema, gerenciando o ciclo de vida completo do atendimento desde a recepção da mensagem até o retorno ao usuário.
