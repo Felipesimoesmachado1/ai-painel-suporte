@@ -15,7 +15,7 @@ Este projeto é a base de um Micro-SaaS para gestão de atendimento. Ele recebe 
 
 ---
 
-## Infraestrutura e Containerização (Docker 🐳)
+## Infraestrutura e Containerização (Docker🐳)
 Todo o ecossistema de back-end opera em um ambiente isolado e conteinerizado, gerenciado através do **Docker Compose**. Essa abordagem garante portabilidade, fácil replicação do ambiente em qualquer servidor (Cloud ou On-Premise) e independência de sistema operacional.
 
 Os seguintes serviços rodam simultaneamente na mesma rede lógica (`docker-network`):
