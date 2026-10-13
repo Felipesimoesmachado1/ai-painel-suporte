@@ -41,6 +41,7 @@ Este documento detalha a engenharia do fluxo `Fluxo Principal-IA`, responsável 
 ### 8. Caminho TRUE (Abertura de Chamado)
 - **A. `Save` (PostgreSQL - Execute Query):** Executa o comando `INSERT INTO chamados_suporte` para salvar as variáveis absolutas (protocolo, telefone, mensagem original, categoria, prioridade e resposta da IA) na tabela principal, alimentando o Dashboard web e o Power BI.
 
+
 ## Fluxo 2: API REST para o Dashboard (Frontend)
 **Objetivo:** Servir os dados do banco de dados para a interface web de forma segura.
 
