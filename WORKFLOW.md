@@ -40,6 +40,29 @@ Este documento detalha a engenharia do fluxo `Fluxo Principal-IA`, responsável 
 
 ### 8. Caminho TRUE (Abertura de Chamado)
 - **A. `Save` (PostgreSQL - Execute Query):** Executa o comando `INSERT INTO chamados_suporte` para salvar as variáveis absolutas (protocolo, telefone, mensagem original, categoria, prioridade e resposta da IA) na tabela principal, alimentando o Dashboard web e o Power BI.
+
+## Fluxo 2: API REST para o Dashboard (Frontend)
+**Objetivo:** Servir os dados do banco de dados para a interface web de forma segura.
+
+### 1. Webhook (Endpoint da API)
+- **Função:** Receber requisições do frontend (HTML/JS).
+- **Configuração:** 
+  - **Método:** `GET`
+  - **Caminho (Path):** `/chamados`
+  - **Segurança (CORS):** Ativado em *Options* para permitir que o GitHub Pages consuma os dados sem ser bloqueado pela política de mesma origem dos navegadores.
+  - **Resposta:** Configurado para *Using Respond to Webhook Node*.
+
+### 2. PostgreSQL (Busca)
+- **Função:** Consultar os chamados recentes.
+- **Configuração:** Executa um `SELECT * FROM chamados_suporte ORDER BY id DESC LIMIT 10`, garantindo que o painel exiba sempre os tickets mais novos primeiro.
+
+### 3. Respond to Webhook (Resposta HTTP)
+- **Função:** Empacotar e devolver os dados.
+- **Configuração:** Transforma as linhas brutas do banco de dados em um array JSON formatado utilizando a expressão: `{{ $input.all().map(item => item.json) }}`. Esse JSON é então retornado para o `fetch()` do aplicativo web, que renderiza os cards no painel.
+
+---
+
+> 💡 **Nota Técnica:** Todo o fluxo utiliza referências de nós absolutas (`$()`) no n8n em vez de relativas (`$json`). Isso garante que a arquitetura seja escalável e não sofra perda de contexto (erros de `undefined`) caso novos nós de processamento sejam adicionados no meio do caminho futuramente.
 - **B. `HTTP Request_ticket` (Evolution API):** Dispara uma requisição HTTP POST para a API do WhatsApp, enviando a mensagem oficial de abertura de chamado, informando a categoria, prioridade e o número do protocolo gerado.
 
 ### 9. Caminho FALSE (Atendimento Simples)
