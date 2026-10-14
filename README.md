@@ -39,7 +39,8 @@ CREATE TABLE chamados_suporte (
     prioridade VARCHAR(20),
     resposta_ia TEXT,
     data_criacao TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-);´´´
+);
+```
 
 ## 📊 Analytics e Business Intelligence (Power BI)
 O sistema não apenas resolve o fluxo operacional, mas gera inteligência para a tomada de decisão gerencial. Um painel no Power BI foi conectado nativamente ao PostgreSQL (via modo Import/DirectQuery) para consumir a tabela `chamados_suporte`.
