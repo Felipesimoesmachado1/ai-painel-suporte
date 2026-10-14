@@ -84,7 +84,7 @@ O Painel de Chamados é a interface administrativa web projetada para o Nível 1
 ## 📂 Arquivos do Projeto
 Para facilitar a avaliação técnica e reprodução do ambiente, os arquivos originais estão disponíveis na pasta `assets`:
 - **Fluxos de Automação:** 
-  - [📁 Workflow 1: Triagem Inteligente (IA)](assets/fluxo-principal-ia.json)
-  - [📁 Workflow 2: API do Dashboard](assets/APIDashboard.json)
+  - [📁 Workflow 1: Triagem Inteligente (IA)](assets/FluxoPrincipal-IA.json)
+  - [📁 Workflow 2: API do Dashboard](assets/API_Dashboard.json)
 - **Analytics:** 
   - [📊 Dashboard Power BI - Gestão de Chamados](assets/PROJETO_TICKET.pbix)
