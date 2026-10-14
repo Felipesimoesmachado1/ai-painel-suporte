@@ -25,7 +25,7 @@ Os seguintes serviços rodam simultaneamente na mesma rede lógica (`docker-netw
 
 ---
 
-## ⚙️ Fluxos de Automação (n8n)
+##  Fluxos de Automação (n8n)
 
 O ecossistema conta com dois fluxos orquestrados no n8n que se dividem entre processamento cognitivo e disponibilização de dados:
 
