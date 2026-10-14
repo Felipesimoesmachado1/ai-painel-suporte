@@ -23,9 +23,9 @@ O Painel de Chamados é a interface administrativa web projetada para o Nível 1
 ##  Artefatos do Repositório
 Este repositório é focado na arquitetura de backend, automação e inteligência de dados. Abaixo estão os artefatos técnicos inclusos:
 
-- `[Uploading Fluxo Principal-IA.json…]()
+- `[]
 `: Exportação completa do fluxo do n8n para importação e auditoria da lógica de automação e integração com a IA.
-- `dashboard-suporte.pbix`: Arquivo fonte do Power BI contendo as queries do Power Query (M), as medidas DAX e o layout do dashboard de inteligência.
+- ``: Arquivo fonte do Power BI contendo as queries do Power Query (M), as medidas DAX e o layout do dashboard de inteligência.
 
 > 💡 **Demonstração em Tempo Real:** Abaixo, um fluxo completo demonstrando o recebimento da mensagem no WhatsApp, o processamento da IA e o reflexo imediato no Painel Web.
 >
