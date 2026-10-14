@@ -25,6 +25,25 @@ Os seguintes serviços rodam simultaneamente na mesma rede lógica (`docker-netw
 
 ---
 
+## ⚙️ Fluxos de Automação (n8n)
+
+O ecossistema conta com dois fluxos orquestrados no n8n que se dividem entre processamento cognitivo e disponibilização de dados:
+
+1. **Triagem Inteligente com IA (`Fluxo Principal-AI`):**
+   - **Gatilho & Filtro:** Recebe o webhook da Evolution API e aplica regra anti-loop (`fromMe`).
+   - **Contexto & Decisão:** Extrai os dados, gera protocolo único e aciona o **AI Agent (Google Gemini)** utilizando memória de conversa persistente no PostgreSQL.
+   - **Roteamento Dinâmico:** Um nó de *Parse IA* estrutura a decisão da LLM:
+     - **Caminho True (Abertura de Chamado):** Persiste o ticket no PostgreSQL (`chamados_suporte`) e envia o comprovante com o protocolo para o WhatsApp.
+     - **Caminho False (Conversa/Dúvida):** Responde o usuário no WhatsApp mantendo o histórico sem registrar chamado técnico.
+
+2. **API REST para o Dashboard (`API Chamados`):**
+   - Disponibiliza um endpoint HTTP `GET /webhook/chamados` com suporte a CORS para alimentar o painel web (HTML/JS) consumindo os registros mais recentes do banco.
+
+> 📖 **Documentação Técnica Detalhada:**  
+> Para consultar a arquitetura completa nó a nó, expressões JavaScript de controle, variáveis absolutas e regras do banco de dados, acesse o arquivo **[WORKFLOW.md](WORKFLOW.md)**.
+
+---
+
 ##  Estrutura do Banco de Dados (PostgreSQL)
 A tabela `chamados_suporte` atua como a *Single Source of Truth* (Fonte Única de Verdade) do sistema.
 
@@ -41,6 +60,7 @@ CREATE TABLE chamados_suporte (
     data_criacao TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 ```
+---
 
 ##  Analytics e Business Intelligence (Power BI📊)
 O sistema não apenas resolve o fluxo operacional, mas gera inteligência para a tomada de decisão gerencial. Um painel no Power BI foi conectado nativamente ao PostgreSQL (via modo Import/DirectQuery) para consumir a tabela `chamados_suporte`.
