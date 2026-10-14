@@ -42,7 +42,7 @@ O ecossistema conta com dois fluxos orquestrados no n8n que se dividem entre pro
 > 📖 **Documentação Técnica Detalhada:**  
 > Para consultar a arquitetura completa nó a nó, expressões JavaScript de controle, variáveis absolutas e regras do banco de dados, acesse o arquivo **[WORKFLOW.md](WORKFLOW.md)**.
 
----
+
 
 ##  Estrutura do Banco de Dados (PostgreSQL)
 A tabela `chamados_suporte` atua como a *Single Source of Truth* (Fonte Única de Verdade) do sistema.
