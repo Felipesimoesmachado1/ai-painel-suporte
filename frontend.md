@@ -25,7 +25,7 @@ Este repositório é focado na arquitetura de backend, automação e inteligênc
 
 - `[]
 `: Exportação completa do fluxo do n8n para importação e auditoria da lógica de automação e integração com a IA.
-- ``: Arquivo fonte do Power BI contendo as queries do Power Query (M), as medidas DAX e o layout do dashboard de inteligência.
+- ``: Arquivo fonte do Power BI layout do dashboard de inteligência.
 
 > 💡 **Demonstração em Tempo Real:** Abaixo, um fluxo completo demonstrando o recebimento da mensagem no WhatsApp, o processamento da IA e o reflexo imediato no Painel Web.
 >
