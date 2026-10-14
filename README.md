@@ -40,3 +40,17 @@ CREATE TABLE chamados_suporte (
     resposta_ia TEXT,
     data_criacao TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
+
+## 📊 Analytics e Business Intelligence (Power BI)
+O sistema não apenas resolve o fluxo operacional, mas gera inteligência para a tomada de decisão gerencial. Um painel no Power BI foi conectado nativamente ao PostgreSQL (via modo Import/DirectQuery) para consumir a tabela `chamados_suporte`.
+
+**Processo de ETL e Modelagem:**
+- Tratamento de tipos de dados (Datas e Textos) via Power Query.
+- Criação de medidas em DAX para contagem dinâmica e filtragem de severidade.
+
+**Métricas e KPIs acompanhados no Dashboard:**
+- **Volume Geral:** Contagem total de chamados abertos.
+- **Distribuição por Categoria:** Gráficos mostrando quais áreas (Sistema, Hardware, Dúvida) demandam mais esforço do suporte.
+
+<img width="896" height="467" alt="image" src="https://github.com/user-attachments/assets/6954f4ce-b44d-4db2-b0ff-382c6fd6621b" />
+
