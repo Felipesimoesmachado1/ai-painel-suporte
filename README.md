@@ -54,5 +54,5 @@ O sistema não apenas resolve o fluxo operacional, mas gera inteligência para a
 - **Distribuição por Categoria:** Gráficos mostrando quais áreas (Sistema, Hardware, Dúvida) demandam mais esforço do suporte.
 
 
-*<img width="896" height="467" alt="image" src="https://github.com/user-attachments/assets/6954f4ce-b44d-4db2-b0ff-382c6fd6621b" />*
+<img width="896" height="467" alt="image" src="https://github.com/user-attachments/assets/6954f4ce-b44d-4db2-b0ff-382c6fd6621b" />
 
