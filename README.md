@@ -76,19 +76,15 @@ O Painel de Chamados é a interface administrativa web projetada para o Nível 1
   - Ao clicar em um ticket, um modal em overlay é aberto.
   - O modal é dividido em 3 áreas funcionais para agilizar o atendimento: Detalhes do Usuário/Problema, Resposta Gerada pela IA e Ações Rápidas.
   - O modal também renderiza, na parte inferior, o **Histórico Completo** do cliente, listando todos os chamados anteriores abertos por aquele mesmo número, permitindo que o atendente compreenda as recorrências.
+ 
+![Demonstração do Painel em Funcionamento](assets/Painel.gif)
 
 ---
 
-##  Arquivos do do Repositório
-Este repositório é focado na arquitetura de backend, automação e inteligência de dados. Abaixo estão os arquivos técnicos inclusos:
-
-- `[Faça o download do fluxo completo para importação no n8n clicando aqui: 
-[📁 Workflow n8n - Triagem Inteligente](fluxo-principal-ia.json)]
-
-`:O arquivo original do dashboard estruturado está disponível para download e exploração: 
-[📊 Projeto Power BI - Dashboard de Chamados](PROJETO_TICKET.pbix) 
-
-
-> 💡 **Demonstração em Tempo Real:** Abaixo, um fluxo completo demonstrando o recebimento da mensagem no WhatsApp, o processamento da IA e o reflexo imediato no Painel Web.
->
-> *(Insira o seu GIF aqui)*
+## 📂 Arquivos do Projeto
+Para facilitar a avaliação técnica e reprodução do ambiente, os arquivos originais estão disponíveis na pasta `assets`:
+- **Fluxos de Automação:** 
+  - [📁 Workflow 1: Triagem Inteligente (IA)](assets/fluxo-principal-ia.json)
+  - [📁 Workflow 2: API do Dashboard](assets/APIDashboard.json)
+- **Analytics:** 
+  - [📊 Dashboard Power BI - Gestão de Chamados](assets/PROJETO_TICKET.pbix)
