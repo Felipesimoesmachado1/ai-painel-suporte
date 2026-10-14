@@ -80,11 +80,14 @@ O Painel de Chamados é a interface administrativa web projetada para o Nível 1
 ---
 
 ##  Arquivos do do Repositório
-Este repositório é focado na arquitetura de backend, automação e inteligência de dados. Abaixo estão os artefatos técnicos inclusos:
+Este repositório é focado na arquitetura de backend, automação e inteligência de dados. Abaixo estão os arquivos técnicos inclusos:
 
-- `[]
-`: Exportação completa do fluxo do n8n para importação e auditoria da lógica de automação e integração com a IA.
-- ``: Arquivo fonte do Power BI layout do dashboard de inteligência.
+- `[Faça o download do fluxo completo para importação no n8n clicando aqui: 
+[📁 Workflow n8n - Triagem Inteligente](fluxo-principal-ia.json)]
+
+`:O arquivo original do dashboard estruturado está disponível para download e exploração: 
+[📊 Projeto Power BI - Dashboard de Chamados](PROJETO_TICKET.pbix) 
+
 
 > 💡 **Demonstração em Tempo Real:** Abaixo, um fluxo completo demonstrando o recebimento da mensagem no WhatsApp, o processamento da IA e o reflexo imediato no Painel Web.
 >
