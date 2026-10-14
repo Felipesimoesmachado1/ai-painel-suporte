@@ -1,0 +1,721 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Monitoramento - Suporte IA</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body { 
+            background-color: #1A202C; 
+            color: #E2E8F0; 
+            -webkit-tap-highlight-color: transparent;
+        }
+        .panel { background-color: #2D3748; }
+        .hidden-screen { display: none !important; }
+        
+        /* Barra de rolagem personalizada para Dark Mode */
+        ::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: rgba(15, 23, 42, 0.6);
+        }
+        ::-webkit-scrollbar-thumb {
+            background: rgba(75, 85, 99, 0.8);
+            border-radius: 9999px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: rgba(107, 114, 128, 1);
+        }
+    </style>
+</head>
+<body class="min-h-screen flex items-center justify-center p-3 sm:p-4">
+
+    <!-- Tela de Login -->
+    <div id="telaLogin" class="panel rounded-2xl shadow-2xl p-6 sm:p-8 w-full max-w-md border border-gray-700/80 transition-all">
+        <div class="text-center mb-6">
+            <div class="w-12 h-12 bg-blue-600/20 border border-blue-500/30 rounded-2xl flex items-center justify-center mx-auto mb-3 text-blue-400">
+                <svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+                </svg>
+            </div>
+            <h2 class="text-xl sm:text-2xl font-bold text-white">Acesso Restrito</h2>
+            <p class="text-xs sm:text-sm text-gray-400 mt-1">Painel de Monitoramento IA</p>
+        </div>
+
+        <div class="mb-4">
+            <label for="inputUsuario" class="block text-xs sm:text-sm font-medium mb-1.5 text-gray-300">Usuário</label>
+            <input type="text" id="inputUsuario" class="w-full p-2.5 sm:p-3 rounded-xl bg-gray-700/90 border border-gray-600 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 text-white text-sm" placeholder="Digite seu usuário" autocomplete="username">
+        </div>
+        <div class="mb-6">
+            <label for="inputSenha" class="block text-xs sm:text-sm font-medium mb-1.5 text-gray-300">Senha</label>
+            <input type="password" id="inputSenha" class="w-full p-2.5 sm:p-3 rounded-xl bg-gray-700/90 border border-gray-600 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 text-white text-sm" placeholder="Digite sua senha" autocomplete="current-password">
+        </div>
+        <button id="btnEntrar" class="w-full bg-blue-600 hover:bg-blue-700 active:scale-[0.98] text-white font-semibold py-2.5 sm:py-3 px-4 rounded-xl transition shadow-lg shadow-blue-600/30 text-sm">
+            Entrar
+        </button>
+    </div>
+
+    <!-- Tela do Dashboard -->
+    <div id="painelPrincipal" class="hidden-screen w-full max-w-4xl h-screen flex flex-col pt-3 sm:pt-4 px-1 sm:px-4">
+        <!-- Topo / Barra de Ferramentas -->
+        <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 mb-4 sm:mb-5 flex-shrink-0">
+            <div>
+                <div class="flex items-center gap-2">
+                    <span class="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-pulse"></span>
+                    <h1 class="text-lg sm:text-2xl font-bold text-white tracking-tight">Monitoramento em Tempo Real</h1>
+                </div>
+                <p class="text-xs text-gray-400 mt-0.5">Dossiê de Clientes Únicos • Triagem inteligente (LGPD)</p>
+            </div>
+            <div class="flex items-center gap-2 w-full sm:w-auto justify-between sm:justify-end">
+                <button id="refresh-btn" title="Atualizar chamados" class="text-xs bg-gray-700/90 hover:bg-gray-600 text-gray-200 py-1.5 px-3 rounded-lg flex items-center gap-1.5 transition border border-gray-600/60 active:scale-95">
+                    <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                    </svg>
+                    <span>Atualizar</span>
+                </button>
+                <button id="logout-btn" class="text-xs bg-red-600/90 hover:bg-red-600 text-white py-1.5 px-3 rounded-lg transition active:scale-95">
+                    Sair
+                </button>
+            </div>
+        </div>
+
+        <!-- Lista de Chamados com rolagem vertical -->
+        <div class="flex-1 overflow-y-auto pb-6 pr-0.5 overscroll-contain">
+            <div id="tickets-container" class="grid gap-3 sm:gap-4">
+                <!-- Chamados injetados via JS -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal do Chamado (Mobile-First com rolagem interna) -->
+    <div id="ticket-modal" class="hidden-screen fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center p-3 sm:p-4 z-50 transition-opacity">
+        <div class="panel rounded-2xl shadow-2xl w-full max-w-lg max-h-[92vh] sm:max-h-[88vh] flex flex-col border border-gray-700/80 overflow-hidden bg-[#242d3d]">
+            
+            <!-- Header do Modal (Fixo no topo para sempre permitir fechar facilmente) -->
+            <div class="flex justify-between items-center px-4 py-3 sm:px-5 sm:py-3.5 border-b border-gray-700/80 bg-gray-800/95 flex-shrink-0">
+                <div class="flex items-center gap-2 min-w-0 pr-2">
+                    <span class="w-2.5 h-2.5 rounded-full bg-blue-500 animate-pulse flex-shrink-0"></span>
+                    <h3 class="text-sm sm:text-base font-bold text-white tracking-wide truncate" id="modal-title">Detalhes do Chamado</h3>
+                </div>
+                <button id="close-modal-btn" aria-label="Fechar modal" class="text-gray-400 hover:text-white hover:bg-gray-700/60 w-8 h-8 rounded-lg transition text-xl flex items-center justify-center leading-none flex-shrink-0">
+                    &times;
+                </button>
+            </div>
+
+            <!-- Conteúdo com rolagem interna -->
+            <div class="p-3.5 sm:p-5 overflow-y-auto space-y-3.5 flex-1 overscroll-contain">
+                
+                <!-- Área 1: CLIENTE E MENSAGEM (Fundo escuro padrão) -->
+                <div class="bg-gray-800/95 border border-gray-700/80 rounded-xl p-3.5 sm:p-4 shadow-sm">
+                    <div class="flex items-start justify-between gap-3 mb-3">
+                        <div class="min-w-0 flex-1">
+                            <span class="text-[11px] font-semibold uppercase tracking-wider text-gray-400 block mb-0.5">Cliente</span>
+                            <h4 id="modal-client-name" class="text-base sm:text-lg font-bold text-white truncate">Nome do Cliente</h4>
+                            
+                            <!-- Telefone com Máscara LGPD e Botão de Alternância -->
+                            <div class="flex items-center gap-2 text-xs text-blue-400 font-mono mt-1 flex-wrap">
+                                <div class="flex items-center gap-1.5">
+                                    <svg class="w-3.5 h-3.5 text-gray-400 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
+                                    </svg>
+                                    <span id="modal-client-phone" data-telefone="" class="font-semibold text-gray-200">Não informado</span>
+                                </div>
+                                <button id="modal-toggle-phone-btn" type="button" class="inline-flex items-center gap-1 text-[11px] bg-gray-700/80 hover:bg-gray-600 text-gray-300 hover:text-white px-2 py-0.5 rounded-md transition border border-gray-600/60 active:scale-95 cursor-pointer" title="Mostrar telefone (LGPD)">
+                                    <span id="modal-toggle-phone-icon" class="flex items-center"></span>
+                                    <span id="modal-toggle-phone-text">Mostrar</span>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="pt-2 border-t border-gray-700/60">
+                        <h5 class="text-[11px] font-semibold uppercase tracking-wider text-gray-400 mb-1.5 flex items-center gap-1.5">
+                            <svg class="w-3.5 h-3.5 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z" />
+                            </svg>
+                            Mensagem Original
+                        </h5>
+                        <div id="modal-original-message" class="bg-gray-900/90 p-3 rounded-lg text-xs sm:text-sm text-gray-200 border border-gray-700/60 leading-relaxed whitespace-pre-wrap break-words">
+                            <!-- Mensagem injetada via JS -->
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Área 2: TRIAGEM E PROBLEMA (Fundo levemente acinzentado/azulado) -->
+                <div class="bg-slate-800/85 border border-slate-700/80 rounded-xl p-3 sm:p-3.5 shadow-sm">
+                    <div class="text-[11px] font-semibold uppercase tracking-wider text-slate-400 mb-2 flex items-center gap-1.5">
+                        <svg class="w-3.5 h-3.5 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4" />
+                        </svg>
+                        Triagem e Problema
+                    </div>
+                    <div class="grid grid-cols-1 sm:grid-cols-3 gap-2 text-xs">
+                        <div class="bg-slate-900/70 p-2.5 rounded-lg border border-slate-700/60 flex sm:flex-col justify-between items-center sm:items-start gap-1">
+                            <span class="text-slate-400 text-[11px]">Protocolo</span>
+                            <span id="modal-protocolo" class="font-mono font-bold text-blue-400">#00000</span>
+                        </div>
+                        <div class="bg-slate-900/70 p-2.5 rounded-lg border border-slate-700/60 flex sm:flex-col justify-between items-center sm:items-start gap-1">
+                            <span class="text-slate-400 text-[11px]">Categoria</span>
+                            <span id="modal-tag-categoria" class="px-2 py-0.5 rounded-md font-medium text-slate-200 bg-slate-700/80 border border-slate-600/70 text-xs">Geral</span>
+                        </div>
+                        <div class="bg-slate-900/70 p-2.5 rounded-lg border border-slate-700/60 flex sm:flex-col justify-between items-center sm:items-start gap-1">
+                            <span class="text-slate-400 text-[11px]">Prioridade</span>
+                            <span id="modal-tag-prioridade" class="px-2 py-0.5 rounded-md font-semibold text-xs border">Média</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Área 3: RESPOSTA DA IA (Destaque visual, borda ou ícone, indicando ação tomada) -->
+                <div class="bg-gradient-to-br from-blue-950/40 via-slate-900/60 to-indigo-950/30 border border-blue-500/50 rounded-xl p-3.5 sm:p-4 shadow-sm relative overflow-hidden">
+                    <div class="flex items-center justify-between gap-2 mb-2">
+                        <div class="flex items-center gap-1.5 text-xs sm:text-sm font-bold text-blue-300">
+                            <svg class="w-4 h-4 text-blue-400 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" />
+                            </svg>
+                            <span>Resposta da IA (Gemini)</span>
+                        </div>
+                        <span class="text-[10px] sm:text-[11px] font-semibold bg-blue-500/20 text-blue-300 border border-blue-500/40 px-2 py-0.5 rounded-full flex items-center gap-1 flex-shrink-0">
+                            <span class="w-1.5 h-1.5 rounded-full bg-blue-400 animate-ping"></span>
+                            Ação Tomada
+                        </span>
+                    </div>
+                    <div id="modal-ai-response" class="bg-blue-950/30 border border-blue-800/50 p-3 rounded-lg text-xs sm:text-sm text-blue-100 leading-relaxed whitespace-pre-wrap break-words">
+                        <!-- Resposta da IA injetada via JS -->
+                    </div>
+                </div>
+
+                <!-- Seção: Histórico do Usuário -->
+                <div class="pt-1">
+                    <button id="toggle-history-btn" type="button" aria-expanded="false" class="w-full flex items-center justify-between p-3 rounded-xl bg-gray-800/90 hover:bg-gray-750 border border-gray-700/80 text-gray-200 hover:text-white transition shadow-sm group active:scale-[0.99]">
+                        <div class="flex items-center gap-2">
+                            <svg class="w-4 h-4 text-blue-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                            </svg>
+                            <span class="text-xs sm:text-sm font-semibold">Ver Histórico do Usuário</span>
+                            <span id="history-count-badge" class="text-[11px] font-mono px-2 py-0.5 rounded-full bg-gray-700 text-gray-300 border border-gray-600">0</span>
+                        </div>
+                        <svg id="toggle-history-arrow" class="w-4 h-4 text-gray-400 transition-transform duration-200" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                        </svg>
+                    </button>
+
+                    <div id="history-section" class="hidden mt-2.5 transition-all">
+                        <div id="history-list" class="space-y-2 max-h-56 overflow-y-auto pr-1">
+                            <!-- Histórico injetado via JS -->
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Ícones SVG reutilizáveis para o botão de máscara (LGPD)
+        const EYE_OPEN_SVG = `<svg class="w-3.5 h-3.5 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" /><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" /></svg>`;
+        const EYE_SLASH_SVG = `<svg class="w-3.5 h-3.5 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l18 18" /></svg>`;
+
+        // Array global para armazenar todos os tickets recebidos da API
+        let todosChamados = [];
+
+        // Elementos da Tela de Login e Dashboard
+        const telaLogin = document.getElementById('telaLogin') || document.getElementById('login-screen');
+        const painelPrincipal = document.getElementById('painelPrincipal') || document.getElementById('dashboard-screen');
+        const btnEntrar = document.getElementById('btnEntrar') || document.getElementById('login-btn');
+        const logoutBtn = document.getElementById('logout-btn');
+        const refreshBtn = document.getElementById('refresh-btn');
+        const inputUsuario = document.getElementById('inputUsuario');
+        const inputSenha = document.getElementById('inputSenha');
+        
+        // Elementos dos Chamados e Modal
+        const ticketsContainer = document.getElementById('tickets-container');
+        const ticketModal = document.getElementById('ticket-modal');
+        const closeModalBtn = document.getElementById('close-modal-btn');
+        const modalTitle = document.getElementById('modal-title');
+        
+        // Elementos das Áreas do Modal
+        const modalClientName = document.getElementById('modal-client-name');
+        const modalClientPhone = document.getElementById('modal-client-phone');
+        const modalTogglePhoneBtn = document.getElementById('modal-toggle-phone-btn');
+        const modalTogglePhoneIcon = document.getElementById('modal-toggle-phone-icon');
+        const modalTogglePhoneText = document.getElementById('modal-toggle-phone-text');
+        const modalOriginalMessage = document.getElementById('modal-original-message');
+        const modalProtocolo = document.getElementById('modal-protocolo');
+        const modalTagCategoria = document.getElementById('modal-tag-categoria');
+        const modalTagPrioridade = document.getElementById('modal-tag-prioridade');
+        const modalAiResponse = document.getElementById('modal-ai-response');
+
+        // Estado de visualização do telefone no modal (Regra de ouro: sempre inicia como false)
+        let modalPhoneRevealed = false;
+
+        // Elementos do Histórico do Usuário
+        const toggleHistoryBtn = document.getElementById('toggle-history-btn');
+        const toggleHistoryArrow = document.getElementById('toggle-history-arrow');
+        const historyCountBadge = document.getElementById('history-count-badge');
+        const historySection = document.getElementById('history-section');
+        const historyList = document.getElementById('history-list');
+
+        // Função de Máscara de Privacidade (LGPD)
+        function mascararTelefone(telefone) {
+            if (!telefone) return 'Não informado';
+            const limpo = String(telefone).replace(/\D/g, '');
+            if (limpo.length < 4) return '***';
+
+            // Com DDI 55 (ex: 554799012338 ou 554788893564 -> (47) 9****-**64)
+            if (limpo.startsWith('55') && limpo.length >= 12) {
+                const ddd = limpo.slice(2, 4);
+                const ultimos2 = limpo.slice(-2);
+                return `(${ddd}) 9****-**${ultimos2}`;
+            } 
+            // Com DDD nacional (10 ou 11 dígitos -> (47) 9****-**64)
+            else if (limpo.length === 10 || limpo.length === 11) {
+                const ddd = limpo.slice(0, 2);
+                const ultimos2 = limpo.slice(-2);
+                return `(${ddd}) 9****-**${ultimos2}`;
+            } 
+            // Formato genérico com os 4 últimos dígitos visíveis (ex: ***-***-3564)
+            else {
+                const ultimos4 = limpo.slice(-4);
+                return `***-***-${ultimos4}`;
+            }
+        }
+
+        // Helpers de Formatação e Semântica
+        function obterTimestampTicket(ticket) {
+            const raw = ticket.data_criacao || ticket.criado_em || ticket.created_at || ticket.data || ticket.timestamp;
+            if (raw) {
+                const time = new Date(raw).getTime();
+                if (!isNaN(time)) return time;
+            }
+            if (ticket.id) return Number(ticket.id) || 0;
+            if (ticket.protocolo) return Number(ticket.protocolo) || 0;
+            return 0;
+        }
+
+        function formatarDataOuInfo(ticket) {
+            const raw = ticket.data_criacao || ticket.criado_em || ticket.created_at || ticket.data || ticket.timestamp;
+            if (!raw) return 'Data recente';
+            try {
+                const d = new Date(raw);
+                if (isNaN(d.getTime())) return String(raw);
+                return d.toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit', year: 'numeric' }) + 
+                       ' ' + d.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
+            } catch {
+                return String(raw);
+            }
+        }
+
+        function formatarTelefone(tel) {
+            if (!tel) return 'Não informado';
+            const limpo = String(tel).replace(/\D/g, '');
+            if (limpo.length === 12 && limpo.startsWith('55')) {
+                return `+55 (${limpo.slice(2, 4)}) ${limpo.slice(4, 8)}-${limpo.slice(8)}`;
+            } else if (limpo.length === 13 && limpo.startsWith('55')) {
+                return `+55 (${limpo.slice(2, 4)}) ${limpo.slice(4, 9)}-${limpo.slice(9)}`;
+            } else if (limpo.length === 11) {
+                return `(${limpo.slice(0, 2)}) ${limpo.slice(2, 7)}-${limpo.slice(7)}`;
+            } else if (limpo.length === 10) {
+                return `(${limpo.slice(0, 2)}) ${limpo.slice(2, 6)}-${limpo.slice(6)}`;
+            }
+            return tel;
+        }
+
+        function getPriorityBadgeClasses(prioridade) {
+            const p = String(prioridade || '').toLowerCase();
+            if (p.includes('alta')) {
+                return 'bg-red-950/70 text-red-300 border-red-800/80';
+            } else if (p.includes('méd') || p.includes('med')) {
+                return 'bg-yellow-950/70 text-yellow-300 border-yellow-800/80';
+            } else {
+                return 'bg-emerald-950/70 text-emerald-300 border-emerald-800/80';
+            }
+        }
+
+        // Função assíncrona para buscar chamados da API
+        async function buscarChamadosDaAPI() {
+            const apiKeyRecuperada = sessionStorage.getItem('apiKey') || '';
+            const response = await fetch('https://laziness-deflator-thwarting.ngrok-free.dev/webhook/chamados', {
+                method: 'GET',
+                headers: {
+                    'ngrok-skip-browser-warning': 'true',
+                    'X-API-KEY': apiKeyRecuperada
+                }
+            });
+            if (!response.ok) {
+                throw new Error(`Erro na requisição: ${response.status}`);
+            }
+            const dados = await response.json();
+            todosChamados = Array.isArray(dados) ? dados : (dados ? [dados] : []);
+            renderTickets(todosChamados);
+        }
+
+        // Lógica de Autenticação (POST)
+        async function realizarLogin() {
+            const valorUsuario = inputUsuario ? inputUsuario.value : '';
+            const valorSenha = inputSenha ? inputSenha.value : '';
+
+            try {
+                const response = await fetch('https://laziness-deflator-thwarting.ngrok-free.dev/webhook/login', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'ngrok-skip-browser-warning': 'true'
+                    },
+                    body: JSON.stringify({
+                        usuario: valorUsuario,
+                        senha: valorSenha
+                    })
+                });
+
+                if (response.status === 200) {
+                    const dados = await response.json();
+                    const payload = Array.isArray(dados) ? dados[0] : dados;
+                    const apiKey = (payload && payload.api_key !== undefined) 
+                        ? payload.api_key 
+                        : (payload && payload.apiKey ? payload.apiKey : payload);
+                    sessionStorage.setItem('apiKey', apiKey);
+
+                    telaLogin.classList.add('hidden-screen');
+                    painelPrincipal.classList.remove('hidden-screen');
+                    document.body.classList.remove('items-center');
+                    document.body.classList.add('items-start');
+
+                    carregarChamados();
+                } else {
+                    alert("Usuário ou senha incorretos");
+                }
+            } catch (error) {
+                console.error('Erro na autenticação:', error);
+                alert("Usuário ou senha incorretos");
+            }
+        }
+
+        function carregarChamados() {
+            ticketsContainer.innerHTML = `
+                <div class="py-12 text-center text-gray-400 flex flex-col items-center justify-center gap-2">
+                    <svg class="animate-spin h-6 w-6 text-blue-500" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z"></path>
+                    </svg>
+                    <p class="text-sm">Carregando chamados do PostgreSQL...</p>
+                </div>
+            `;
+            buscarChamadosDaAPI().catch(error => {
+                console.error('Erro ao conectar com a API:', error);
+                ticketsContainer.innerHTML = `
+                    <div class="py-8 text-center bg-red-950/20 border border-red-800/40 rounded-xl p-4">
+                        <p class="text-red-400 font-semibold mb-2">Erro ao conectar com a API</p>
+                        <p class="text-xs text-gray-400 mb-4">Verifique a conexão com o endpoint ngrok.</p>
+                        <button onclick="carregarChamados()" class="text-xs bg-gray-700 hover:bg-gray-600 text-white py-1.5 px-3 rounded-lg transition">Tentar Novamente</button>
+                    </div>
+                `;
+            });
+        }
+
+        if (btnEntrar) {
+            btnEntrar.addEventListener('click', realizarLogin);
+        }
+        if (inputSenha) {
+            inputSenha.addEventListener('keydown', (e) => {
+                if (e.key === 'Enter') realizarLogin();
+            });
+        }
+        if (inputUsuario) {
+            inputUsuario.addEventListener('keydown', (e) => {
+                if (e.key === 'Enter') inputSenha.focus();
+            });
+        }
+
+        // Lógica de Logout
+        if (logoutBtn) {
+            logoutBtn.addEventListener('click', () => {
+                sessionStorage.removeItem('apiKey');
+                painelPrincipal.classList.add('hidden-screen');
+                telaLogin.classList.remove('hidden-screen');
+                document.body.classList.add('items-center');
+                document.body.classList.remove('items-start');
+                if (inputUsuario) inputUsuario.value = '';
+                if (inputSenha) inputSenha.value = '';
+            });
+        }
+
+        // Botão de Atualizar
+        if (refreshBtn) {
+            refreshBtn.addEventListener('click', carregarChamados);
+        }
+
+        // Função para atualizar o botão de alternância do modal
+        function atualizarBotaoModalTelefone(revelado) {
+            if (revelado) {
+                modalTogglePhoneIcon.innerHTML = EYE_SLASH_SVG;
+                modalTogglePhoneText.textContent = 'Ocultar';
+                modalTogglePhoneBtn.title = 'Ocultar telefone (LGPD)';
+            } else {
+                modalTogglePhoneIcon.innerHTML = EYE_OPEN_SVG;
+                modalTogglePhoneText.textContent = 'Mostrar';
+                modalTogglePhoneBtn.title = 'Mostrar telefone (LGPD)';
+            }
+        }
+
+        // Evento de clique para alternar o telefone no Modal
+        modalTogglePhoneBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            modalPhoneRevealed = !modalPhoneRevealed;
+            const telOriginal = modalClientPhone.dataset.telefone;
+            
+            if (modalPhoneRevealed) {
+                modalClientPhone.innerText = formatarTelefone(telOriginal);
+                atualizarBotaoModalTelefone(true);
+            } else {
+                modalClientPhone.innerText = mascararTelefone(telOriginal);
+                atualizarBotaoModalTelefone(false);
+            }
+        });
+
+        // Função para renderizar os cards de chamados na tela (Agrupados por Cliente Único)
+        function renderTickets(chamados) {
+            ticketsContainer.innerHTML = '';
+            
+            if (!chamados || chamados.length === 0) {
+                ticketsContainer.innerHTML = '<p class="text-gray-400 text-center py-8">Nenhum chamado encontrado.</p>';
+                return;
+            }
+
+            // Agrupa os chamados pelo telefone_cliente
+            const gruposPorTelefone = new Map();
+            chamados.forEach(ticket => {
+                const tel = ticket.telefone_cliente || 'sem-telefone';
+                if (!gruposPorTelefone.has(tel)) {
+                    gruposPorTelefone.set(tel, []);
+                }
+                gruposPorTelefone.get(tel).push(ticket);
+            });
+
+            // Seleciona exclusivamente o chamado mais recente de cada usuário
+            const clientesUnicos = [];
+            gruposPorTelefone.forEach((listaChamados) => {
+                listaChamados.sort((a, b) => obterTimestampTicket(b) - obterTimestampTicket(a));
+                const chamadoMaisRecente = listaChamados[0];
+                chamadoMaisRecente._totalChamados = listaChamados.length;
+                clientesUnicos.push(chamadoMaisRecente);
+            });
+
+            // Ordena os clientes na tela principal colocando os com chamados mais recentes no topo
+            clientesUnicos.sort((a, b) => obterTimestampTicket(b) - obterTimestampTicket(a));
+
+            clientesUnicos.forEach(ticket => {
+                const priorityBadge = getPriorityBadgeClasses(ticket.prioridade);
+                const dataFormatada = formatarDataOuInfo(ticket);
+                // Por padrão o telefone inicia mascarado (Regra de Ouro LGPD)
+                const telMascarado = mascararTelefone(ticket.telefone_cliente);
+                const totalChamados = ticket._totalChamados || 1;
+                
+                const card = document.createElement('div');
+                card.className = 'panel p-4 rounded-xl border border-gray-700/80 cursor-pointer hover:border-blue-500/80 active:scale-[0.99] transition shadow-sm flex flex-col gap-2.5';
+                card.innerHTML = `
+                    <div class="flex justify-between items-center gap-2">
+                        <div class="flex items-center gap-2">
+                            <span class="font-mono text-xs sm:text-sm text-blue-400 font-bold bg-blue-950/60 border border-blue-900/60 px-2 py-0.5 rounded">#${ticket.protocolo || '---'}</span>
+                            ${totalChamados > 1 ? `<span class="text-[10px] sm:text-[11px] font-semibold bg-blue-500/10 border border-blue-500/30 text-blue-300 px-2 py-0.5 rounded-full flex items-center gap-1"><span class="w-1.5 h-1.5 rounded-full bg-blue-400"></span>${totalChamados} chamados</span>` : ''}
+                        </div>
+                        <div class="flex items-center gap-2">
+                            <span class="text-[11px] text-gray-400 hidden sm:inline">${dataFormatada}</span>
+                            <span class="text-xs font-semibold px-2 py-0.5 rounded-full border ${priorityBadge}">${ticket.prioridade || 'Normal'}</span>
+                        </div>
+                    </div>
+                    <div>
+                        <div class="flex items-center justify-between gap-2">
+                            <h3 class="font-semibold text-base sm:text-lg text-white truncate">${ticket.nome_cliente || 'Cliente'}</h3>
+                            <span class="text-[11px] text-gray-400 sm:hidden">${dataFormatada}</span>
+                        </div>
+                        <div class="text-xs text-gray-400 mt-1 flex items-center gap-2 flex-wrap">
+                            <div class="flex items-center gap-1.5 bg-gray-800/80 px-2 py-0.5 rounded border border-gray-700/60">
+                                <span class="font-mono text-gray-200 card-phone-display" data-telefone="${ticket.telefone_cliente || ''}">${telMascarado}</span>
+                                <button type="button" class="card-toggle-phone-btn inline-flex items-center gap-1 text-[10px] text-gray-400 hover:text-white px-1 py-0.5 rounded hover:bg-gray-700 transition active:scale-90" title="Mostrar telefone (LGPD)">
+                                    <span class="card-toggle-icon flex items-center">${EYE_OPEN_SVG}</span>
+                                    <span class="card-toggle-text">Mostrar</span>
+                                </button>
+                            </div>
+                            <span class="text-gray-600">•</span>
+                            <span class="bg-gray-700/60 px-1.5 py-0.5 rounded text-gray-300">${ticket.categoria || 'Geral'}</span>
+                        </div>
+                    </div>
+                    <p class="text-xs sm:text-sm text-gray-300 line-clamp-2 bg-gray-900/40 p-2.5 rounded-lg border border-gray-800/60 leading-relaxed">${ticket.mensagem_original || 'Sem mensagem'}</p>
+                    <div class="flex justify-between items-center text-[11px] pt-1 border-t border-gray-700/50">
+                        <span class="${ticket.resposta_ia ? 'text-blue-400 flex items-center gap-1.5' : 'text-gray-500 flex items-center gap-1.5'}">
+                            <span class="w-1.5 h-1.5 rounded-full ${ticket.resposta_ia ? 'bg-blue-400' : 'bg-gray-500'}"></span>
+                            ${ticket.resposta_ia ? 'IA respondeu' : 'Aguardando resposta da IA'}
+                        </span>
+                        <span class="text-blue-400 font-medium flex items-center gap-1">Ver dossiê do cliente &rarr;</span>
+                    </div>
+                `;
+
+                // Botão de alternância do telefone no card
+                const toggleBtn = card.querySelector('.card-toggle-phone-btn');
+                const phoneSpan = card.querySelector('.card-phone-display');
+                const toggleIcon = card.querySelector('.card-toggle-icon');
+                const toggleText = card.querySelector('.card-toggle-text');
+                let isCardPhoneRevealed = false;
+
+                toggleBtn.addEventListener('click', (e) => {
+                    e.stopPropagation(); // Evita acionar o clique do card que abre o modal
+                    isCardPhoneRevealed = !isCardPhoneRevealed;
+                    const rawTel = phoneSpan.dataset.telefone;
+
+                    if (isCardPhoneRevealed) {
+                        phoneSpan.textContent = formatarTelefone(rawTel);
+                        toggleIcon.innerHTML = EYE_SLASH_SVG;
+                        toggleText.textContent = 'Ocultar';
+                        toggleBtn.title = 'Ocultar telefone (LGPD)';
+                    } else {
+                        phoneSpan.textContent = mascararTelefone(rawTel);
+                        toggleIcon.innerHTML = EYE_OPEN_SVG;
+                        toggleText.textContent = 'Mostrar';
+                        toggleBtn.title = 'Mostrar telefone (LGPD)';
+                    }
+                });
+                
+                // Abre o modal ao clicar no card (fora do botão de alternância de telefone)
+                card.addEventListener('click', () => openModal(ticket));
+                ticketsContainer.appendChild(card);
+            });
+        }
+
+        // Renderiza a lista de histórico filtrada do usuário
+        function renderHistoricoUsuario(outrosChamados, ticketAtual) {
+            historyList.innerHTML = '';
+            historyCountBadge.innerText = outrosChamados.length;
+
+            if (outrosChamados.length === 0) {
+                historyList.innerHTML = `
+                    <div class="text-xs text-gray-400 text-center py-3.5 px-3 bg-gray-900/60 rounded-lg border border-dashed border-gray-700/80">
+                        Nenhum chamado anterior encontrado.
+                    </div>
+                `;
+                return;
+            }
+
+            outrosChamados.forEach(item => {
+                const itemEl = document.createElement('div');
+                itemEl.className = 'p-2.5 rounded-lg bg-gray-900/90 border border-gray-700/70 hover:border-blue-500/80 transition cursor-pointer flex items-center justify-between text-xs sm:text-sm group active:scale-[0.99]';
+                
+                const dataStr = formatarDataOuInfo(item);
+                const prioridadeClass = getPriorityBadgeClasses(item.prioridade);
+                
+                itemEl.innerHTML = `
+                    <div class="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-3 min-w-0 pr-2">
+                        <span class="font-mono font-bold text-blue-400 group-hover:underline">#${item.protocolo || 'N/A'}</span>
+                        <span class="text-gray-400 text-xs truncate">
+                            ${dataStr} <span class="text-gray-600 mx-1">•</span> <span class="text-gray-300 font-medium">${item.categoria || 'Geral'}</span>
+                        </span>
+                    </div>
+                    <div class="flex items-center gap-2 flex-shrink-0">
+                        <span class="text-[11px] px-2 py-0.5 rounded-full border ${prioridadeClass}">${item.prioridade || 'Normal'}</span>
+                        <span class="text-gray-500 group-hover:text-blue-400 text-xs font-semibold">&rarr;</span>
+                    </div>
+                `;
+                
+                // Ao clicar no chamado do histórico, alterna para visualizá-lo no modal
+                itemEl.addEventListener('click', () => {
+                    openModal(item);
+                });
+                
+                historyList.appendChild(itemEl);
+            });
+        }
+
+        // Preenche e exibe o modal (Dossiê do Cliente)
+        function openModal(ticket) {
+            // Título no Header
+            modalTitle.innerText = `Protocolo #${ticket.protocolo || '---'} - ${ticket.nome_cliente || 'Chamado'}`;
+            
+            // Área 1: CLIENTE E MENSAGEM
+            modalClientName.innerText = ticket.nome_cliente || 'Cliente não identificado';
+            
+            // Regra de Ouro: O estado padrão ao abrir o modal DEVE ser sempre com o número oculto
+            modalPhoneRevealed = false;
+            modalClientPhone.dataset.telefone = ticket.telefone_cliente || '';
+            modalClientPhone.innerText = mascararTelefone(ticket.telefone_cliente);
+            atualizarBotaoModalTelefone(false);
+
+            modalOriginalMessage.innerText = ticket.mensagem_original || 'Sem mensagem informada.';
+
+            // Área 2: TRIAGEM E PROBLEMA
+            modalProtocolo.innerText = `#${ticket.protocolo || '---'}`;
+            modalTagCategoria.innerText = ticket.categoria || 'Geral';
+            
+            const prioridade = ticket.prioridade || 'Normal';
+            modalTagPrioridade.innerText = prioridade;
+            modalTagPrioridade.className = 'px-2 py-0.5 rounded-md font-semibold text-xs border ' + getPriorityBadgeClasses(prioridade);
+
+            // Área 3: RESPOSTA DA IA
+            if (ticket.resposta_ia && ticket.resposta_ia.trim() !== '') {
+                modalAiResponse.innerText = ticket.resposta_ia;
+                modalAiResponse.classList.remove('italic', 'text-gray-400');
+                modalAiResponse.classList.add('text-blue-100');
+            } else {
+                modalAiResponse.innerText = 'Aguardando resposta da IA para este chamado.';
+                modalAiResponse.classList.add('italic', 'text-gray-400');
+                modalAiResponse.classList.remove('text-blue-100');
+            }
+
+            // Histórico do Usuário: lista todos os outros chamados vinculados àquele mesmo telefone_cliente
+            const telefoneAtual = ticket.telefone_cliente;
+            const outrosChamados = todosChamados
+                .filter(t => t.telefone_cliente === telefoneAtual && String(t.protocolo) !== String(ticket.protocolo))
+                .sort((a, b) => obterTimestampTicket(b) - obterTimestampTicket(a));
+            
+            renderHistoricoUsuario(outrosChamados, ticket);
+
+            // Reseta a aba/seção de histórico para recolhida
+            historySection.classList.add('hidden');
+            toggleHistoryArrow.classList.remove('rotate-180');
+            toggleHistoryBtn.setAttribute('aria-expanded', 'false');
+
+            // Exibe o modal e bloqueia scroll de fundo
+            ticketModal.classList.remove('hidden-screen');
+            document.body.classList.add('overflow-hidden');
+        }
+
+        // Alternar visualização do Histórico
+        toggleHistoryBtn.addEventListener('click', () => {
+            const isHidden = historySection.classList.contains('hidden');
+            if (isHidden) {
+                historySection.classList.remove('hidden');
+                toggleHistoryArrow.classList.add('rotate-180');
+                toggleHistoryBtn.setAttribute('aria-expanded', 'true');
+                setTimeout(() => {
+                    historySection.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+                }, 80);
+            } else {
+                historySection.classList.add('hidden');
+                toggleHistoryArrow.classList.remove('rotate-180');
+                toggleHistoryBtn.setAttribute('aria-expanded', 'false');
+            }
+        });
+
+        // Fechar o Modal
+        function closeModal() {
+            ticketModal.classList.add('hidden-screen');
+            document.body.classList.remove('overflow-hidden');
+        }
+
+        closeModalBtn.addEventListener('click', closeModal);
+
+        ticketModal.addEventListener('click', (e) => {
+            if (e.target === ticketModal) {
+                closeModal();
+            }
+        });
+
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape' && !ticketModal.classList.contains('hidden-screen')) {
+                closeModal();
+            }
+        });
+    </script>
+</body>
+</html>
