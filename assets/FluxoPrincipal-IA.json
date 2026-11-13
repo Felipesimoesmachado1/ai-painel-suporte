@@ -6,7 +6,7 @@
         "promptType": "define",
         "text": "={{ $('Extrair_Dados').item.json.mensagem }}",
         "options": {
-          "systemMessage": "=Você é um assistente de suporte técnico Nível 1.\nAnalise a mensagem do cliente. Se for um problema/falha, abra ticket. Se for saudação/dúvida simples, não abra.\nResponda ESTRITAMENTE em formato JSON puro (sem markdown):\n{\n  \"precisa_abrir_ticket\": true ou false,\n  \"categoria\": \"Sistema, Hardware, Rede, Financeiro ou Nenhuma\",\n  \"prioridade\": \"Baixa, Media, Alta ou Nenhuma\",\n  \"resposta\": \"Sua mensagem amigável para o cliente (IMPORTANTE: Informe obrigatoriamente ao usuário que o número do protocolo de atendimento dele é {{ $('Gerar Protocolo').item.json.protocolo_unico }}.}"
+          "systemMessage": "=Você é o assistente de triagem inteligente da equipe de suporte técnico. Seu objetivo é entender a necessidade do cliente e orientá-lo.\n\nO sistema gerou o seguinte número de protocolo para esta sessão: [{{ $('Gerar Protocolo').item.json.protocolo_unico }}]\n\nREGRAS ESTRITAS DE COMUNICAÇÃO:\n\nCenário 1: Interações Casuais ou Vazias\nSe o cliente enviar apenas uma saudação (ex: \"Oi\", \"Bom dia\"), uma mensagem vazia, ou uma dúvida genérica (\"Como funciona?\"), responda de forma natural e amigável perguntando como você pode ajudar.\nREGRA CRÍTICA DO CENÁRIO 1: NUNCA mencione a palavra \"protocolo\" ou o número do protocolo neste cenário. Neste caso, a variável \"precisa_abrir_ticket\" deve ser false.\n\nCenário 2: Relato de Problema ou Solicitação de Suporte\nSe o cliente relatar um problema real (ex: \"Minha internet caiu\", \"Erro no sistema\", \"Preciso de ajuda com minha conta\"), confirme que a solicitação foi registrada para a equipe técnica.\nREGRA CRÍTICA DO CENÁRIO 2: Neste caso, você DEVE obrigatoriamente informar o número do protocolo de forma educada (ex: \"Entendi. Já registrei sua solicitação. O número do seu protocolo de atendimento é XXXXX.\"). Neste caso, a variável \"precisa_abrir_ticket\" deve ser true.\n\n FORMATO DE SAÍDA OBRIGATÓRIO (CRÍTICO) \nVocê não pode responder com texto livre. Você DEVE retornar a sua resposta EXCLUSIVAMENTE em formato JSON válido, sem blocos de código (sem a marcação ```json) e sem nenhum texto antes ou depois.\nUse exatamente esta estrutura:\n{\n\"resposta\": \"O texto final que será enviado ao cliente respondendo a ele\",\n\"categoria\": \"A categoria do problema relatado (ex: Suporte Técnico, Dúvida Geral, Interação Casual)\",\n\"prioridade\": \"Alta, Média ou Baixa\",\n\"precisa_abrir_ticket\": true ou false\n}"
         }
       },
       "type": "@n8n/n8n-nodes-langchain.agent",
@@ -123,10 +123,11 @@
             {
               "id": "e569927a-dac6-48d7-b438-6cc2d5aebd46",
               "leftValue": "={{ $json.abrir_ticket }}",
-              "rightValue": true,
+              "rightValue": "={{ $json.protocolo }}",
               "operator": {
                 "type": "boolean",
-                "operation": "equals"
+                "operation": "true",
+                "singleValue": true
               }
             }
           ],
@@ -138,7 +139,7 @@
       "type": "n8n-nodes-base.if",
       "typeVersion": 2.3,
       "position": [
-        384,
+        400,
         -384
       ],
       "id": "eda1f778-f86b-4130-9392-25e845905246",
@@ -146,14 +147,14 @@
     },
     {
       "parameters": {
-        "content": "INFORMAÇÕES DE ENTRADA",
+        "content": "ENTRADA DE DADO",
         "height": 432,
-        "width": 756,
+        "width": 740,
         "color": 7
       },
       "type": "n8n-nodes-base.stickyNote",
       "position": [
-        -864,
+        -848,
         -512
       ],
       "typeVersion": 1,
@@ -164,7 +165,7 @@
       "parameters": {
         "content": "PROJEÇÃO DE DADO",
         "height": 432,
-        "width": 640,
+        "width": 576,
         "color": 7
       },
       "type": "n8n-nodes-base.stickyNote",
@@ -214,7 +215,7 @@
             },
             {
               "name": "text",
-              "value": "={{ $('Parse IA').first().json.resposta_ia }}"
+              "value": "={{ $('Parse IA').item.json.resposta_ia }}"
             }
           ]
         },
@@ -251,7 +252,7 @@
             },
             {
               "name": "text",
-              "value": "={{ $('Parse IA').first().json.resposta_ia }}"
+              "value": "={{ $('Parse IA').item.json.resposta_ia }}"
             }
           ]
         },
@@ -509,12 +510,12 @@
       ]
     }
   },
-  "active": false,
+  "active": true,
   "settings": {
     "executionOrder": "v1",
     "binaryMode": "separate"
   },
-  "versionId": "671e8dfd-9946-427c-abcb-9ee78fd8844b",
+  "versionId": "21344432-0a90-470f-acd5-b9e8a4eb0d68",
   "meta": {
     "templateCredsSetupCompleted": true,
     "instanceId": "354db0121b0d47e1ab0e2b4927943a58e68e08f476b17b998578bec8a392ebb8"
